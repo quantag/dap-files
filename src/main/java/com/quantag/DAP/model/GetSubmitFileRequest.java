@@ -3,11 +3,11 @@ package com.quantag.DAP.model;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.List;
-
-public class GetSubmitFilesRequest {
+public class GetSubmitFileRequest {
     @Setter @Getter
     String sessionId;
     @Setter @Getter
-    List<FileData> files = null;
+    String path;
+    @Setter @Getter
+    String source;
 }
