@@ -23,32 +23,40 @@ public class Controller {
         //log request data
         log.info("request: " + requestData);
 
-        if(requestData.getSessionId() != null && requestData.getFiles() != null) {
-            List<FileData> fileDataList = requestData.getFiles();
-            for(FileData fileData : fileDataList) {
-                //gets file name from path
-                String fileName = FilenameUtils.getName( fileData.getPath() );
-                //decode source
-                byte[] decodedSource = Base64.getDecoder().decode( fileData.getSource() );
-
-                String pathToStore = (mainFolder == null) ? fileName : mainFolder + fileName;
-                //String pathToStore = fileName;
-
-                try (OutputStream stream = new FileOutputStream(pathToStore)) {
-                    stream.write(decodedSource);
-                    log.info("Decoded to "+ pathToStore);
-                    response.setStatus(HttpStatus.OK.value());
-                }
-                catch (Exception ex) {
-                    log.error(ex.getMessage());
-                    response.setStatus(HttpStatus.CONFLICT.value());
-                }
-            }
-        }
-        else {
+        if(!requestData.validate()) {
             log.error("BAD_REQUEST: NULL in request data");
             response.setStatus(HttpStatus.BAD_REQUEST.value());
+            return;
         }
+
+        List<FileData> fileDataList = requestData.getFiles();
+        for(FileData fileData : fileDataList) {
+
+            String relativePath = Utils.replace( requestData.getRelativePath(fileData.getPath()) , '\\', '/' );
+            log.info( "[" + relativePath + "]");
+
+            //gets file name from path
+            //String fileName = FilenameUtils.getName( fileData.getPath() );
+            //decode source
+            byte[] decodedSource = Base64.getDecoder().decode( fileData.getSource() );
+
+            String pathToStore = (mainFolder == null) ? "" : mainFolder;
+            pathToStore += relativePath;
+            log.info( "pathToStore [" + pathToStore + "]");
+
+            Utils.createFolderIfNotExist(pathToStore);
+
+            try (OutputStream stream = new FileOutputStream(pathToStore)) {
+                stream.write(decodedSource);
+                log.info("Decoded to "+ pathToStore);
+                response.setStatus(HttpStatus.OK.value());
+            }
+            catch (Exception ex) {
+                log.error(ex.getMessage());
+                response.setStatus(HttpStatus.CONFLICT.value());
+            }
+        }
+
 
     }
 
