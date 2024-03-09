@@ -6,6 +6,7 @@ import lombok.Setter;
 public class FileData {
     @Setter @Getter
     String path;
+
     @Setter @Getter
     String source;
 }

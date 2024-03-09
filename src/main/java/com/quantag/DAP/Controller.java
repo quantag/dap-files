@@ -19,26 +19,9 @@ import static com.quantag.DAP.Application.mainFolder;
 public class Controller {
 
     @PostMapping("/submitFiles")
-    public void getSubmitFiles(@RequestBody GetSubmitFilesRequest requestData, HttpServletResponse response) {
+    public void getSubmitFiles(@RequestBody SubmitFilesRequest requestData, HttpServletResponse response) {
         //log request data
-        String fileDataRequest = "";
-        if(requestData.getFiles() == null) {
-            fileDataRequest = "null";
-        }
-        else {
-            List<FileData> fileDataList = requestData.getFiles();
-            for(FileData fileData : fileDataList) {
-                fileDataRequest += "{" +
-                        "\"path\": " + fileData.getPath() + ", " +
-                        "\"source\": \"" + fileData.getSource() + "\"" +
-                        "}";
-            }
-        }
-        String newRequest = "{" +
-                "\"sessionId\": \"" + requestData.getSessionId() + "\", " +
-                "\"files\": [" + fileDataRequest + "]" +
-                "}";
-        log.info("request: " + newRequest);
+        log.info("request: " + requestData);
 
         if(requestData.getSessionId() != null && requestData.getFiles() != null) {
             List<FileData> fileDataList = requestData.getFiles();
@@ -70,21 +53,15 @@ public class Controller {
     }
 
     @PostMapping("/submitFile")
-    public void getSubmitFile(@RequestBody GetSubmitFileRequest requestData, HttpServletResponse response) {
+    public void getSubmitFile(@RequestBody SubmitFileRequest requestData, HttpServletResponse response) {
         //log request data
-        String newRequest = "{" +
-                "\"sessionId\": \"" + requestData.getSessionId() + "\", " +
-                "\"path\": " + requestData.getPath() + ", " +
-                "\"source\": \"" + requestData.getSource() + "\"" +
-                "}";
-        log.info("request: "+ newRequest);
+        log.info("request: "+ requestData);
 
         if(requestData.getSessionId() != null && requestData.getPath() != null && requestData.getSource() != null) {
             //gets file name from path
             String fileName = FilenameUtils.getName( requestData.getPath() );
             //decode source
             byte[] decodedSource = Base64.getDecoder().decode( requestData.getSource() );
-
             String pathToStore = (mainFolder == null) ? fileName : mainFolder + fileName;
 
             try (OutputStream stream = new FileOutputStream(pathToStore)) {
