@@ -19,51 +19,43 @@ import static com.quantag.DAP.Application.mainFolder;
 public class Controller {
 
     @PostMapping("/submitFiles")
-    public void getSubmitFiles(@RequestBody SubmitFilesRequest requestData, HttpServletResponse response) {
+    public SubmitFileResponse submitFiles(@RequestBody SubmitFilesRequest requestData, HttpServletResponse response) {
         //log request data
-        log.info("request: " + requestData);
+        if(requestData==null)
+            return new SubmitFileResponse(SubmitFileResponse.BAD_REQUEST);
+        
+        log.info("\nsubmitFiles request: " + requestData + "\n");
 
         if(!requestData.validate()) {
             log.error("BAD_REQUEST: NULL in request data");
             response.setStatus(HttpStatus.BAD_REQUEST.value());
-            return;
+            return new SubmitFileResponse(SubmitFileResponse.BAD_REQUEST);
         }
+
+        String sessionPath = mainFolder + "/" + requestData.getSessionId();
+        log.info("session path: " + sessionPath);
+        Utils.clearFolder(sessionPath);
 
         List<FileData> fileDataList = requestData.getFiles();
         for(FileData fileData : fileDataList) {
-
             String relativePath = Utils.replace( requestData.getRelativePath(fileData.getPath()) , '\\', '/' );
-            log.info( "[" + relativePath + "]");
+            log.info( " relative path: [" + relativePath + "]");
 
-            //gets file name from path
-            //String fileName = FilenameUtils.getName( fileData.getPath() );
-            //decode source
             byte[] decodedSource = Base64.getDecoder().decode( fileData.getSource() );
-
-            String pathToStore = (mainFolder == null) ? "" : mainFolder;
+            String pathToStore = sessionPath + "/";
             pathToStore += relativePath;
             log.info( "pathToStore [" + pathToStore + "]");
 
-            Utils.createFolderIfNotExist(pathToStore);
-
-            try (OutputStream stream = new FileOutputStream(pathToStore)) {
-                stream.write(decodedSource);
-                log.info("Decoded to "+ pathToStore);
-                response.setStatus(HttpStatus.OK.value());
-            }
-            catch (Exception ex) {
-                log.error(ex.getMessage());
-                response.setStatus(HttpStatus.CONFLICT.value());
-            }
+            Utils.saveFile(pathToStore, decodedSource);
         }
-
-
+        response.setStatus(HttpStatus.OK.value());
+        return new SubmitFileResponse(SubmitFileResponse.OK);
     }
 
     @PostMapping("/submitFile")
-    public void getSubmitFile(@RequestBody SubmitFileRequest requestData, HttpServletResponse response) {
+    public SubmitFileResponse submitFile(@RequestBody SubmitFileRequest requestData, HttpServletResponse response) {
         //log request data
-        log.info("request: "+ requestData);
+        log.info("\nsubmitFile request: "+ requestData);
 
         if(requestData.getSessionId() != null && requestData.getPath() != null && requestData.getSource() != null) {
             //gets file name from path
@@ -86,7 +78,7 @@ public class Controller {
             log.error("BAD_REQUEST: NULL in request data");
             response.setStatus(HttpStatus.BAD_REQUEST.value());
         }
-
+        return new SubmitFileResponse(SubmitFileResponse.OK);
     }
 
 }

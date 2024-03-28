@@ -19,12 +19,13 @@ public class SubmitFilesRequest {
         String res = "";
 
         if(sessionId!=null)
-            res+= "sessionId = " + sessionId;
+            res += "sessionId = " + sessionId;
 
         if(root!=null)
-            res+=", root = [" + root + "] ";
+            res += ", root = [" + root + "] ";
 
         if(files != null) {
+            res += files.size() + " files: ";
             for(FileData file : files) {
                 res += file.getPath() +"\n";
             }
