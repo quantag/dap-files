@@ -9,7 +9,15 @@ public class SubmitFileResponse {
     @Setter @Getter
     int status;
 
+    @Setter @Getter
+    int files;
+
     public SubmitFileResponse(int status) {
         this.status = status;
+        this.files = 0;
+    }
+    public SubmitFileResponse(int status, int files) {
+        this.status = status;
+        this.files = files;
     }
 }

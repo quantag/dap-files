@@ -8,6 +8,9 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.BufferedOutputStream;
 import java.io.FileOutputStream;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.Files;
 
 @Slf4j
 public class Utils {
@@ -72,5 +75,10 @@ public class Utils {
         } catch (java.io.IOException e) {
             log.error("Can not store data to file "+path);
         }
+    }
+
+    public static byte[] loadFile(String path) throws java.io.IOException {
+        Path filePath = Paths.get(path);
+        return Files.readAllBytes(filePath);
     }
 }

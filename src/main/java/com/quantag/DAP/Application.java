@@ -13,6 +13,7 @@ import java.util.Properties;
 @Slf4j
 public class Application {
     public static String mainFolder = null;
+    public static String imageFolder = "/var/dap/images/";
 
     public static void main(String[] args) {
         try {
@@ -20,7 +21,9 @@ public class Application {
             InputStream stream = new FileInputStream("dap-files.properties");
             if(stream != null) {
                 prop.load(stream);
-                mainFolder = new String(prop.getProperty("folder"));
+
+                mainFolder = prop.getProperty("folder", "./");
+                imageFolder = prop.getProperty("imageFolder", "/var/dap/images/");
             }
             else {
                 log.error("ERROR loading dap-files.properties file");
