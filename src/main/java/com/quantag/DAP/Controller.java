@@ -4,6 +4,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import java.util.Vector;
 
 import org.apache.commons.io.FilenameUtils;
 import java.io.FileOutputStream;
@@ -17,8 +18,6 @@ import static com.quantag.DAP.Application.mainFolder;
 @RestController
 @Slf4j
 public class Controller {
-
-  //  public final static String IMAGE_FOLDER = "/var/dap/images/";
 
     @PostMapping("/submitFiles")
     public SubmitFileResponse submitFiles(@RequestBody SubmitFilesRequest requestData, HttpServletResponse response) {
@@ -39,6 +38,7 @@ public class Controller {
         Utils.clearFolder(sessionPath);
 
         List<FileData> fileDataList = requestData.getFiles();
+        Vector<String> paths = new Vector<String>();
         for (FileData fileData : fileDataList) {
             String relativePath = Utils.replace(requestData.getRelativePath(fileData.getPath()), '\\', '/');
             log.info(" relative path: [" + relativePath + "]");
@@ -46,12 +46,13 @@ public class Controller {
             byte[] decodedSource = Base64.getDecoder().decode(fileData.getSource());
             String pathToStore = sessionPath + "/";
             pathToStore += relativePath;
+            paths.addElement(pathToStore);
             log.info("pathToStore [" + pathToStore + "]");
 
             Utils.saveFile(pathToStore, decodedSource);
         }
         response.setStatus(HttpStatus.OK.value());
-        return new SubmitFileResponse(SubmitFileResponse.OK, fileDataList.size());
+        return new SubmitFileResponse(SubmitFileResponse.OK, fileDataList.size(), paths);
     }
 
     @PostMapping("/submitFile")
