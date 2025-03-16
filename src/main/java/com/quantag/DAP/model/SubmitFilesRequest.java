@@ -5,14 +5,11 @@ import lombok.Setter;
 
 import java.util.List;
 
+@Setter
+@Getter
 public class SubmitFilesRequest {
-    @Setter @Getter
     String sessionId;
-
-    @Setter @Getter
     String root;
-
-    @Setter @Getter
     List<FileData> files = null;
 
     public String toString() {

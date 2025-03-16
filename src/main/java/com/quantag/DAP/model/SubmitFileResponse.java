@@ -5,30 +5,27 @@ import java.util.Vector;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+@Setter
+@Getter
 public class SubmitFileResponse {
     public static int OK = 0;
     public static int BAD_REQUEST = 1;
 
-    @Setter @Getter
     int status;
-
-    @Setter @Getter
     int files;
-
-    @Setter @Getter
     Vector<String> paths;
-
-    @Setter @Getter
     String current;
 
     public SubmitFileResponse(int status) {
         this.status = status;
         this.files = 0;
     }
+
     public SubmitFileResponse(int status, int files) {
         this.status = status;
         this.files = files;
     }
+
     public SubmitFileResponse(int status, int files, Vector<String> paths) {
         this.status = status;
         this.files = files;
@@ -42,5 +39,4 @@ public class SubmitFileResponse {
         // Format the current date and time using the formatter
         this.current= now.format(formatter);
     }
-
 }

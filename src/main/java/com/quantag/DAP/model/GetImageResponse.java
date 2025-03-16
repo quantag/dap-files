@@ -6,13 +6,11 @@ import lombok.Setter;
 import java.util.Base64;
 
 
+@Setter
+@Getter
 public class GetImageResponse {
-    @Setter
-    @Getter
     int status;
 
-    @Setter
-    @Getter
     String data;
 
     public GetImageResponse(int status) {

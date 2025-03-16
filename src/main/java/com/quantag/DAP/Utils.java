@@ -4,8 +4,6 @@ package com.quantag.DAP;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
-import java.io.BufferedWriter;
-import java.io.FileWriter;
 import java.io.BufferedOutputStream;
 import java.io.FileOutputStream;
 import java.nio.file.Path;
@@ -30,14 +28,15 @@ public class Utils {
         return replacedString;
     }
 
-    public static void createFolderIfNotExist(String path) {
-        log.info("[" + path + "]");
+    public static boolean createFolderIfNotExist(String path) {
+        log.info("[{}]", path);
         File file = new File(path);
         File parent = file.getParentFile();
 
         if (parent != null && !parent.exists()) {
-            parent.mkdirs(); // This will create all missing parent directories
+            return parent.mkdirs(); // This will create all missing parent directories
         }
+        return false;
     }
 
     public static void clearFolder(String path) {
@@ -66,8 +65,9 @@ public class Utils {
             log.error("null data in saveFile");
             return;
         }
-        Utils.createFolderIfNotExist(path);
-      //  log.info("saveFile to "+path);
+        boolean result = Utils.createFolderIfNotExist(path);
+        if(result)
+            log.info("created folder: {}", path);
 
         try (BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(path))) {
             bos.write(data);

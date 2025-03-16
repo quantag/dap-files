@@ -7,6 +7,8 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Properties;
 
 @SpringBootApplication
@@ -18,7 +20,7 @@ public class Application {
     public static void main(String[] args) {
         try {
             Properties prop = new Properties();
-            InputStream stream = new FileInputStream("dap-files.properties");
+            InputStream stream = Files.newInputStream(Paths.get("dap-files.properties"));
             if(stream != null) {
                 prop.load(stream);
 
