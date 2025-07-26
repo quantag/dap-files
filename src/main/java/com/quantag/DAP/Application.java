@@ -2,6 +2,7 @@ package com.quantag.DAP;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.FileInputStream;
@@ -11,7 +12,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Properties;
 
-@SpringBootApplication
+@SpringBootApplication(exclude = {SecurityAutoConfiguration.class})
 @Slf4j
 public class Application {
     public static String mainFolder = null;
