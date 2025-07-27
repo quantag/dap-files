@@ -30,8 +30,9 @@ public class AuthenticationFilter extends OncePerRequestFilter {
 
             request.setAttribute("userId", userId);
         }
-        else
+        else {
             request.setAttribute("userId", "null");
+        }
 
         filterChain.doFilter(request, response);
     }

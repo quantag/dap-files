@@ -30,7 +30,7 @@ public class GoogleTokenVerifier {
             headerNode = objectMapper.readTree(header);
         }
         catch (JsonProcessingException jsonProcessingException) {
-            log.error("ERROR cannot read from token header: "+ jsonProcessingException.getMessage());
+            log.error("ERROR cannot read from token header: {}", jsonProcessingException.getMessage());
         }
 
         BigInteger modulus = null;
@@ -46,7 +46,7 @@ public class GoogleTokenVerifier {
             exponent = rsaPublicKey.getPublicExponent();
         }
         catch (Exception ex) {
-            log.error("ERROR in getPublicKey(): "+ ex.getMessage());
+            log.error("ERROR in getPublicKey(): {}", ex.getMessage());
         }
 
         RSAPublicKeySpec keySpec = new RSAPublicKeySpec(modulus, exponent);
@@ -56,7 +56,7 @@ public class GoogleTokenVerifier {
             keyFactory = KeyFactory.getInstance("RSA");
         }
         catch (NoSuchAlgorithmException noSuchAlgorithmException) {
-            log.error("ERROR get instance in key factory: "+ noSuchAlgorithmException.getMessage());
+            log.error("ERROR get instance in key factory: {}", noSuchAlgorithmException.getMessage());
         }
 
         try {
@@ -64,7 +64,7 @@ public class GoogleTokenVerifier {
             publicKey = (RSAPublicKey) keyFactory.generatePublic(keySpec);
         }
         catch (InvalidKeySpecException invalidKeySpecException) {
-            log.error("ERROR in generating public key: "+ invalidKeySpecException.getMessage());
+            log.error("ERROR in generating public key: {}", invalidKeySpecException.getMessage());
         }
 
         Algorithm algorithm = Algorithm.RSA256(publicKey);
@@ -73,6 +73,7 @@ public class GoogleTokenVerifier {
 
         if(jwt == null) {
             log.error("ERROR in verification: JWT is null");
+            return "null";
         }
 
 //            String userId = jwt.getSubject();
