@@ -35,6 +35,10 @@ public class FileController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
+        if(!fileService.pathExists(path, userId)) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
         logger.info("GET: List directory contents "+ path);
         return new ResponseEntity<>(fileService.getList(path, userId), HttpStatus.OK);
     }
@@ -51,6 +55,10 @@ public class FileController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
+        if(!fileService.pathExists(path, userId)) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
         logger.info("GET: Get file/folder metadata (stat) "+ path);
         return new ResponseEntity<>(fileService.getStat(path, userId), HttpStatus.OK);
     }
@@ -65,6 +73,10 @@ public class FileController {
         String userId = (String)request.getAttribute("userId");
         if(userId.equals("null")) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+        if(!fileService.pathExists(path, userId)) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
         logger.info("GET: download file content "+ path);
@@ -110,6 +122,10 @@ public class FileController {
         String userId = (String)request.getAttribute("userId");
         if(userId.equals("null")) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+        if(!fileService.pathExists(path, userId)) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
         logger.info("DELETE: Delete file or folder "+ path);

@@ -8,6 +8,6 @@ public class PublicController {
 
     @GetMapping("/public/getVersion")
     public String getVersion() {
-        return "version 1.2.3 build 26.07.2025 13:00";
+        return "version 1.2.4 build 28.07.2025 11:40";
     }
 }

@@ -18,4 +18,5 @@ public interface FileService {
     ResponceDto deleteFile(String path, String userId);
     ResponceDto mkDir(String path, String userId);
     ResponceDto rename(RenameDto renameDto, String userId);
+    boolean pathExists(String path, String userId);
 }

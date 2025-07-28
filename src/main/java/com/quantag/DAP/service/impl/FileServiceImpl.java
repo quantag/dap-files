@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -99,6 +100,26 @@ public class FileServiceImpl implements FileService {
         }
         catch (IOException e) {
             throw new RuntimeException("ERROR reading file: " + path, e);
+        }
+    }
+
+    @Override
+    public boolean pathExists(String path, String userId) {
+        Path mainPath = getFullPath(userId);
+        Path fullPath = (path.isEmpty()) ? mainPath : mainPath.resolve(path).normalize();
+
+        try {
+            Resource resource = new UrlResource(fullPath.toUri());
+            if(resource.exists() || resource.isReadable()) {
+                return true;
+            }
+            else {
+                log.info("File or directory does not exist: "+ fullPath);
+                return false;
+            }
+        }
+        catch (MalformedURLException malformedURLException) {
+            return false;
         }
     }
 
