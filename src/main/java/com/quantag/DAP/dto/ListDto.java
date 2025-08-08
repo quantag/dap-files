@@ -1,5 +1,6 @@
 package com.quantag.DAP.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,5 +12,6 @@ import lombok.NoArgsConstructor;
 @Builder
 public class ListDto {
     private String name;
-    private boolean isDirectory;
+    @JsonProperty("isDirectory")
+    private boolean directory;
 }

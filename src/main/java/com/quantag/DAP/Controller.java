@@ -4,6 +4,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+
+import java.io.IOException;
+import java.nio.file.*;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Vector;
 
 import org.apache.commons.io.FilenameUtils;
@@ -19,7 +23,7 @@ import static com.quantag.DAP.Application.mainFolder;
 @Slf4j
 public class Controller {
 
-    @PostMapping("/submitFiles")
+    @PostMapping("/public/submitFiles")
     public SubmitFileResponse submitFiles(@RequestBody SubmitFilesRequest requestData, HttpServletResponse response) {
         //log request data
         if (requestData == null)
@@ -55,7 +59,7 @@ public class Controller {
         return new SubmitFileResponse(SubmitFileResponse.OK, fileDataList.size(), paths);
     }
 
-    @PostMapping("/submitFile")
+    @PostMapping("/public/submitFile")
     public SubmitFileResponse submitFile(@RequestBody SubmitFileRequest requestData, HttpServletResponse response) {
         //log request data
         log.info("\nsubmitFile request: {}", requestData);
@@ -82,7 +86,44 @@ public class Controller {
         return new SubmitFileResponse(SubmitFileResponse.OK, 1);
     }
 
-    @PostMapping("/getImage")
+    @PostMapping("/public/prepareData")
+    public PrepareDataResponse prepareData(@RequestBody PrepareDataRequest requestData, HttpServletResponse response) {
+        //log request data
+        log.info("prepareData request: {}", requestData);
+
+        Path mainPath = Paths.get(mainFolder).toAbsolutePath().normalize();
+        Path sourcePath = mainPath.resolve(requestData.getUserId()).normalize();
+        log.info("prepareData request, sourcePath = "+ sourcePath);
+
+        Path targetPath = mainPath.resolve(requestData.getSessionId()).normalize();
+        log.info("prepareData request, targetPath = "+ targetPath);
+
+        try {
+            Files.walkFileTree(sourcePath, new SimpleFileVisitor<Path>() {
+
+                public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
+                    Path targetDir = targetPath.resolve(sourcePath.relativize(dir));
+                    if (!Files.exists(targetDir)) {
+                        Files.createDirectories(targetDir);
+                    }
+                    return FileVisitResult.CONTINUE;
+                }
+
+                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                    Files.copy(file, targetPath.resolve(sourcePath.relativize(file)), StandardCopyOption.REPLACE_EXISTING);
+                    return FileVisitResult.CONTINUE;
+                }
+            });
+        }
+        catch (IOException ex) {
+            log.error("ERROR in prepareData for userId: "+ requestData.getUserId());
+            throw new RuntimeException("Cannot prepare data. ", ex);
+        }
+
+        return new PrepareDataResponse(0);
+    }
+
+    @PostMapping("/public/getImage")
     public GetImageResponse getImage(@RequestBody GetImageRequest requestData, HttpServletResponse response) {
         //log request data
         log.info("\ngetImage request: {}", requestData);
@@ -97,7 +138,7 @@ public class Controller {
         }
     }
 
-    @PostMapping("/getFile")
+    @PostMapping("/public/getFile")
     public GetImageResponse getFile(@RequestBody GetFileRequest requestData, HttpServletResponse response) {
         //log request data
         log.info("\ngetFile request: {}", requestData);

@@ -16,10 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
+import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.List;
@@ -126,7 +123,18 @@ public class FileServiceImpl implements FileService {
     @Override
     public String getContentType(Resource resource) {
         try {
-            return Files.probeContentType(resource.getFile().toPath());
+            String ct = Files.probeContentType(resource.getFile().toPath());
+            if(ct == null) {
+                if(resource.getFile().getName().toLowerCase().endsWith(".qasm")) {
+                    return "text/x-qasm";
+                }
+                else {
+                    return "application/octet-stream";
+                }
+            }
+            else {
+                return ct;
+            }
         } catch (IOException e) {
             return "application/octet-stream";
         }
@@ -225,4 +233,5 @@ public class FileServiceImpl implements FileService {
         }
         return fullPath;
     }
+
 }

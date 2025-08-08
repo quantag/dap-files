@@ -30,6 +30,8 @@ public class FileController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
+        path =  cleanPath(path);
+
         String userId = (String)request.getAttribute("userId");
         if(userId.equals("null")) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -49,6 +51,8 @@ public class FileController {
         if(pathVerifier(path)) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
+
+        path =  cleanPath(path);
 
         String userId = (String)request.getAttribute("userId");
         if(userId.equals("null")) {
@@ -70,6 +74,8 @@ public class FileController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
+        path =  cleanPath(path);
+
         String userId = (String)request.getAttribute("userId");
         if(userId.equals("null")) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -79,15 +85,20 @@ public class FileController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
-        logger.info("GET: download file content "+ path);
+        try {
+            logger.info("GET: download file content " + path);
 
-        Resource resource = fileService.getFile(path, userId);
-        String contentType = fileService.getContentType(resource);
+            Resource resource = fileService.getFile(path, userId);
+            String contentType = fileService.getContentType(resource);
 
-        return ResponseEntity.ok()
-                .contentType(MediaType.parseMediaType(contentType))
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
-                .body(resource);
+            return ResponseEntity.ok()
+                    .contentType(MediaType.parseMediaType(contentType))
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
+                    .body(resource);
+        }
+        catch (Exception ex) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 
     @PostMapping("/file")
@@ -97,6 +108,8 @@ public class FileController {
         if(pathVerifier(path)) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
+
+        path =  cleanPath(path);
 
         String userId = (String)request.getAttribute("userId");
         if(userId.equals("null")) {
@@ -119,6 +132,8 @@ public class FileController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
+        path =  cleanPath(path);
+
         String userId = (String)request.getAttribute("userId");
         if(userId.equals("null")) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -138,6 +153,8 @@ public class FileController {
         if(pathVerifier(path)) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
+
+        path =  cleanPath(path);
 
         String userId = (String)request.getAttribute("userId");
         if(userId.equals("null")) {
@@ -170,5 +187,12 @@ public class FileController {
             return true;
         }
         return false;
+    }
+
+    private String cleanPath(String oldPath) {
+        if(oldPath.startsWith("/")) {
+            return oldPath.replaceFirst("/", "");
+        }
+        return oldPath;
     }
 }
